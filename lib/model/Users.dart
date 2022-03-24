@@ -4,7 +4,8 @@ class Users {
   String? cpf;
   String? nome;
   String? email;
+  String? avatar;
 
-  Users({this.id, this.cpf, this.email, this.nome}); //construtor
+  Users({this.id, this.cpf, this.email, this.nome, this.avatar}); //construtor
 
 }

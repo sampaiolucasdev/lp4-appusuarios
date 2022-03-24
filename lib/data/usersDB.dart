@@ -22,7 +22,7 @@ class UsersDB {
     String directory = await getDatabasesPath();
     Database db = await openDatabase(join(directory, "lp.db"), version: 1,
     onCreate: (db, versao){
-      return db.execute("CREATE TABLE $table(id INTEGER PRIMARY KEY AUTOINCREMENT,cpf TEXT, nome TEXT, email TEXT)"
+      return db.execute("CREATE TABLE $table(id INTEGER PRIMARY KEY AUTOINCREMENT,cpf TEXT, nome TEXT, email TEXT, avatar TEXT)"
           );
     });
     return db;
@@ -35,6 +35,7 @@ class UsersDB {
       "cpf": u.cpf,
       "nome": u.nome,
       "email": u.email,
+      "avatar":u.avatar,
     }
     );
     print("Usuário $resultado cadastrado com sucesso!");
@@ -49,6 +50,7 @@ class UsersDB {
         cpf:list[index]["cpf"],
         nome: list[index]["nome"],
         email: list[index]["email"],
+        avatar: list[index]["avatar"],
       );
     });
   }
@@ -61,9 +63,10 @@ class UsersDB {
       Database db = await this.db;
       db.update(table,
       {
-       "cpd": u.cpf,
+       "cpf": u.cpf,
        "nome": u.nome,
        "email": u.email,
+        "avatar": u.avatar,
       },
         where: "id = ?",
         whereArgs: [u.id]

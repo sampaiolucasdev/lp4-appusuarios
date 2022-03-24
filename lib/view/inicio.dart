@@ -29,17 +29,19 @@ class _InicioState extends State<Inicio> {
     db.deleteUser(id);
   }
 
-  updateUsers(int id, String cpf, String nome, String email){
-    db.editUser(Users(id: id, cpf: cpf, nome: nome, email: email));
+  updateUsers(int id, String cpf, String nome, String email, String avatar){
+    db.editUser(Users(id: id, cpf: cpf, nome: nome, email: email, avatar: avatar));
   }
 
   TextEditingController controllerAddUserCPF = TextEditingController();
   TextEditingController controllerAddUsername = TextEditingController();
   TextEditingController controllerAddEmail = TextEditingController();
+  TextEditingController controllerAddAvatar = TextEditingController();
 
   TextEditingController controllerEditUserCPF = TextEditingController();
   TextEditingController controllerEditUsername = TextEditingController();
   TextEditingController controllerEditEmail = TextEditingController();
+  TextEditingController controllerEditAvatar = TextEditingController();
 
   @override
   void initState() {
@@ -62,7 +64,9 @@ class _InicioState extends State<Inicio> {
                 itemCount: usuarios.length,
                 itemBuilder: (context, index){
                   return ListTile(
-                    leading:Icon(Icons.person, color: Colors.blue),
+                    leading: CircleAvatar(
+                      child: NetworkImage(),
+                    ),
                     title: Text(usuarios[index].nome!),
                     subtitle: Text(usuarios[index].email!),
                     trailing: Container(
@@ -71,6 +75,10 @@ class _InicioState extends State<Inicio> {
                         children: [
                           IconButton(
                             onPressed:(){
+                              controllerEditUserCPF.text = usuarios[index].cpf!;
+                              controllerEditUsername.text = usuarios[index].nome!;
+                              controllerEditEmail.text = usuarios[index].email!;
+                              controllerEditAvatar.text = usuarios[index].avatar!;
                               showDialog(
                                   context: context,
                                   builder: (context){
@@ -80,6 +88,14 @@ class _InicioState extends State<Inicio> {
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children:  [
+                                              TextField(
+                                                controller: controllerEditAvatar,
+                                                keyboardType: TextInputType.text,
+                                                decoration: InputDecoration(
+                                                  labelText: "Avatar:",
+                                                  hintText: "Insira o link do Avatar",
+                                                  )
+                                              ),
                                               TextField(
                                                   controller: controllerEditUserCPF,
                                                   keyboardType: TextInputType.number,
@@ -110,35 +126,60 @@ class _InicioState extends State<Inicio> {
                                         actions: [
                                           ElevatedButton(
                                               onPressed: (){
-                                                addUser(Users(
-                                                    cpf: controllerAddUserCPF.text,
-                                                    nome: controllerAddUsername.text,
-                                                    email: controllerAddEmail.text)
+                                                updateUsers(usuarios[index].id!,
+                                                    controllerEditUserCPF.text,
+                                                    controllerEditUsername.text,
+                                                    controllerEditEmail.text,
+                                                    controllerEditAvatar.text,
                                                 );
-                                                controllerAddUsername.clear();
-                                                controllerAddUserCPF.clear();
-                                                controllerAddEmail.clear();
+                                                    controllerEditUsername.clear();
+                                                    controllerEditUserCPF.clear();
+                                                    controllerEditEmail.clear();
+                                                    controllerEditAvatar.clear();
                                                 listUsers();
                                                 Navigator.pop(context);
                                               },
                                               child: Text("Salvar")),
                                           ElevatedButton(
                                               onPressed: (){
+                                                listUsers();
                                                 Navigator.pop(context);
                                               },
                                               child: Text("Cancelar"))
                                         ]
                                     );
                                   }
-                              );
+                              ); //Final do Edit
                             },
                             icon: Icon(Icons.edit),
                             color: Colors.blue,
                           ),
                           IconButton(
                               onPressed:(){
-                                deleteUsers(usuarios[index].id!);
-                                listUsers();
+                                showDialog(
+                                    context:context,
+                                    builder: (context){
+                                      return AlertDialog(
+                                        title: Text("Excluir usuário"),
+                                        content: Text("Deseja excluir o usuário ${usuarios[index].nome} ?"),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: (){
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("Não")
+                                          ),
+                                          TextButton(
+                                              onPressed: (){
+                                                deleteUsers(usuarios[index].id!);
+                                                listUsers();
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("Sim"))
+                                        ]
+                                      );
+                                    });
+
                               },
                               icon: Icon(Icons.delete),
                             color: Colors.red,
@@ -164,6 +205,14 @@ class _InicioState extends State<Inicio> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children:  [
+                        TextField(
+                            controller: controllerAddAvatar,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              labelText: "Avatar:",
+                              hintText: "Digite seu Avatar",
+                            )
+                        ),
                         TextField(
                           controller: controllerAddUserCPF,
                           keyboardType: TextInputType.number,
@@ -197,11 +246,14 @@ class _InicioState extends State<Inicio> {
                           addUser(Users(
                               cpf: controllerAddUserCPF.text,
                               nome: controllerAddUsername.text,
-                              email: controllerAddEmail.text)
+                              email: controllerAddEmail.text,
+                              avatar: controllerAddAvatar.text,
+                            )
                           );
                           controllerAddUsername.clear();
                           controllerAddUserCPF.clear();
                           controllerAddEmail.clear();
+                          controllerAddAvatar.clear();
                           listUsers();
                           Navigator.pop(context);
                         },
