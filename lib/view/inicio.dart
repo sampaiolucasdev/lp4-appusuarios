@@ -65,7 +65,7 @@ class _InicioState extends State<Inicio> {
                 itemBuilder: (context, index){
                   return ListTile(
                     leading: CircleAvatar(
-                      child: NetworkImage(),
+                      child: Image.network(usuarios[index].avatar!),
                     ),
                     title: Text(usuarios[index].nome!),
                     subtitle: Text(usuarios[index].email!),
