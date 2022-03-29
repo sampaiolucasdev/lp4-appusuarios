@@ -17,31 +17,102 @@ class _InicioState extends State<Inicio> {
   addUser(Users u){
     db.addUser(u);
   }
-
   listUsers() async {
     usuarios = await db.listUsers();
     setState(() {
       usuarios;
     });
   }
+  _formularioBusca() {
+    return(
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Buscar Usuário"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controllerBuscaUsuario,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: "Digite o Nome",
+                  border: OutlineInputBorder()
+                ),
+              )
+            ]
+          ),
+            actions: [
+              ElevatedButton(
+                  onPressed: (){
+                    var str = controllerBuscaUsuario.text;
+                    _buscarUsuario(str);
+                    controllerBuscaUsuario.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Buscar")),
+              ElevatedButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancelar"))
+            ]
+        )
+      )
+    );
+  }
+  _buscarUsuario(String busca) async {
+    await listUsers();
+    List<Users> temp = [];
+
+    if(busca == ""){
+      listUsers();
+    } else{
+      for(var e in usuarios){
+        if(e.nome!.contains(busca) || e.email == busca || e.cpf == busca || e.login == busca){
+          temp.add(
+            Users(
+              id: e.id,
+              cpf: e.cpf,
+              nome: e.nome,
+              email: e.email,
+              login: e.login,
+              senha: e.senha,
+              avatar: e.avatar,
+
+            )
+          );
+        }
+      } setState(() {
+        usuarios = temp;
+      });
+    }
+
+  }
+
 
   deleteUsers(int id){
     db.deleteUser(id);
   }
-
-  updateUsers(int id, String cpf, String nome, String email, String avatar){
-    db.editUser(Users(id: id, cpf: cpf, nome: nome, email: email, avatar: avatar));
+  updateUsers(int id, String cpf, String nome, String email, String avatar, String login, String senha){
+    db.editUser(Users(id: id, cpf: cpf, nome: nome, email: email, avatar: avatar, login: login, senha: senha));
   }
 
   TextEditingController controllerAddUserCPF = TextEditingController();
   TextEditingController controllerAddUsername = TextEditingController();
   TextEditingController controllerAddEmail = TextEditingController();
   TextEditingController controllerAddAvatar = TextEditingController();
+  TextEditingController controllerAddLogin = TextEditingController();
+  TextEditingController controllerAddSenha = TextEditingController();
+
+  TextEditingController controllerBuscaUsuario = TextEditingController();
 
   TextEditingController controllerEditUserCPF = TextEditingController();
   TextEditingController controllerEditUsername = TextEditingController();
   TextEditingController controllerEditEmail = TextEditingController();
   TextEditingController controllerEditAvatar = TextEditingController();
+  TextEditingController controllerEditLogin = TextEditingController();
+  TextEditingController controllerEditSenha = TextEditingController();
 
   @override
   void initState() {
@@ -54,7 +125,20 @@ class _InicioState extends State<Inicio> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Início")
+        title: Text("Início"),
+        actions: [
+          IconButton(
+              onPressed: (){
+                _formularioBusca();
+              },
+              icon: Icon(Icons.search)
+          ),
+          IconButton(
+              onPressed: (){
+                listUsers();
+              },
+              icon: Icon(Icons.list))
+        ],
       ),
       body: Container(
         child:Column(
@@ -63,129 +147,155 @@ class _InicioState extends State<Inicio> {
               child: ListView.builder(
                 itemCount: usuarios.length,
                 itemBuilder: (context, index){
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Image.network(usuarios[index].avatar!),
-                    ),
-                    title: Text(usuarios[index].nome!),
-                    subtitle: Text(usuarios[index].email!),
-                    trailing: Container(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed:(){
-                              controllerEditUserCPF.text = usuarios[index].cpf!;
-                              controllerEditUsername.text = usuarios[index].nome!;
-                              controllerEditEmail.text = usuarios[index].email!;
-                              controllerEditAvatar.text = usuarios[index].avatar!;
-                              showDialog(
-                                  context: context,
-                                  builder: (context){
-                                    return AlertDialog(
-                                        title: const Text("Editar Usuário"),
-                                        content: SingleChildScrollView(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children:  [
-                                              TextField(
-                                                controller: controllerEditAvatar,
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(
-                                                  labelText: "Avatar:",
-                                                  hintText: "Insira o link do Avatar",
-                                                  )
-                                              ),
-                                              TextField(
-                                                  controller: controllerEditUserCPF,
-                                                  keyboardType: TextInputType.number,
-                                                  decoration: InputDecoration(
-                                                    labelText: "CPF:",
-                                                    hintText: "Digite seu CPF",
-                                                  )
-                                              ),
-                                              TextField(
-                                                  controller: controllerEditUsername,
-                                                  keyboardType: TextInputType.text,
-                                                  decoration: InputDecoration(
-                                                    labelText: "Nome:",
-                                                    hintText: "Digite seu Nome",
-                                                  )
-                                              ),
-                                              TextField(
-                                                  controller: controllerEditEmail,
-                                                  keyboardType: TextInputType.emailAddress,
-                                                  decoration: InputDecoration(
-                                                    labelText: "E-mail:",
-                                                    hintText: "Digite seu e-mail",
-                                                  )
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        actions: [
-                                          ElevatedButton(
-                                              onPressed: (){
-                                                updateUsers(usuarios[index].id!,
-                                                    controllerEditUserCPF.text,
-                                                    controllerEditUsername.text,
-                                                    controllerEditEmail.text,
-                                                    controllerEditAvatar.text,
-                                                );
-                                                    controllerEditUsername.clear();
-                                                    controllerEditUserCPF.clear();
-                                                    controllerEditEmail.clear();
-                                                    controllerEditAvatar.clear();
-                                                listUsers();
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Salvar")),
-                                          ElevatedButton(
-                                              onPressed: (){
-                                                listUsers();
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Cancelar"))
-                                        ]
-                                    );
-                                  }
-                              ); //Final do Edit
-                            },
-                            icon: Icon(Icons.edit),
-                            color: Colors.blue,
-                          ),
-                          IconButton(
+                  return Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: usuarios[index].avatar! == "" ? Icon(Icons.person, color: Colors.blue) :
+                        Image.network(usuarios[index].avatar!)),
+
+                      title: Text(usuarios[index].nome!),
+                      subtitle: Text(usuarios[index].email!),
+                      trailing: Container(
+                        width: 100,
+                        child: Row(
+                          children: [
+                            IconButton(
                               onPressed:(){
+                                controllerEditUserCPF.text = usuarios[index].cpf!;
+                                controllerEditUsername.text = usuarios[index].nome!;
+                                controllerEditEmail.text = usuarios[index].email!;
+                                controllerEditAvatar.text = usuarios[index].avatar!;
+                                controllerEditLogin.text = usuarios[index].login!;
+                                controllerEditSenha.text = usuarios[index].senha!;
                                 showDialog(
-                                    context:context,
+                                    context: context,
                                     builder: (context){
                                       return AlertDialog(
-                                        title: Text("Excluir usuário"),
-                                        content: Text("Deseja excluir o usuário ${usuarios[index].nome} ?"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: (){
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Não")
+                                          title: const Text("Editar Usuário"),
+                                          content: SingleChildScrollView(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children:  [
+                                                TextField(
+                                                  controller: controllerEditAvatar,
+                                                  keyboardType: TextInputType.text,
+                                                  decoration: InputDecoration(
+                                                    labelText: "Avatar:",
+                                                    hintText: "Insira o link do Avatar",
+                                                    )
+                                                ),
+                                                TextField(
+                                                    controller: controllerEditUserCPF,
+                                                    keyboardType: TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                      labelText: "CPF:",
+                                                      hintText: "Digite seu CPF",
+                                                    )
+                                                ),
+                                                TextField(
+                                                    controller: controllerEditUsername,
+                                                    keyboardType: TextInputType.text,
+                                                    decoration: InputDecoration(
+                                                      labelText: "Nome:",
+                                                      hintText: "Digite seu Nome",
+                                                    )
+                                                ),
+                                                TextField(
+                                                    controller: controllerEditEmail,
+                                                    keyboardType: TextInputType.emailAddress,
+                                                    decoration: InputDecoration(
+                                                      labelText: "E-mail:",
+                                                      hintText: "Digite seu e-mail",
+                                                    )
+                                                ),
+                                                TextField(
+                                                    controller: controllerEditLogin,
+                                                    keyboardType: TextInputType.text,
+                                                    decoration: InputDecoration(
+                                                      labelText: "Login:",
+                                                      hintText: "Digite seu Login",
+                                                    )
+                                                ),
+                                                TextField(
+                                                    controller: controllerEditSenha,
+                                                    keyboardType: TextInputType.visiblePassword,
+                                                    decoration: InputDecoration(
+                                                      labelText: "Senha:",
+                                                      hintText: "Digite sua Senha",
+                                                    ), obscureText: true,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          TextButton(
-                                              onPressed: (){
-                                                deleteUsers(usuarios[index].id!);
-                                                listUsers();
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Sim"))
-                                        ]
-                                      );
-                                    });
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: (){
+                                                  updateUsers(usuarios[index].id!,
+                                                      controllerEditUserCPF.text,
+                                                      controllerEditUsername.text,
+                                                      controllerEditEmail.text,
+                                                      controllerEditAvatar.text,
+                                                      controllerEditLogin.text,
+                                                      controllerEditSenha.text,
+                                                  );
+                                                      controllerEditUsername.clear();
+                                                      controllerEditUserCPF.clear();
+                                                      controllerEditEmail.clear();
+                                                      controllerEditAvatar.clear();
+                                                      controllerEditLogin.clear();
+                                                      controllerEditSenha.clear();
 
+                                                  listUsers();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Salvar")),
+                                            ElevatedButton(
+                                                onPressed: (){
+                                                  listUsers();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Cancelar"))
+                                          ]
+                                      );
+                                    }
+                                ); //Final do Edit
                               },
-                              icon: Icon(Icons.delete),
-                            color: Colors.red,
-                          ),
-                        ],
-                      )
+                              icon: Icon(Icons.edit),
+                              color: Colors.blue,
+                            ),
+                            IconButton(
+                                onPressed:(){
+                                  showDialog(
+                                      context:context,
+                                      builder: (context){
+                                        return AlertDialog(
+                                          title: Text("Excluir usuário"),
+                                          content: Text("Deseja excluir o usuário ${usuarios[index].nome} ?"),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: (){
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Não")
+                                            ),
+                                            TextButton(
+                                                onPressed: (){
+                                                  deleteUsers(usuarios[index].id!);
+                                                  listUsers();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Sim"))
+                                          ]
+                                        );
+                                      });
+
+                                },
+                                icon: Icon(Icons.delete),
+                              color: Colors.red,
+                            ),
+                          ],
+                        )
+                      ),
                     ),
                   );
                 },
@@ -236,7 +346,23 @@ class _InicioState extends State<Inicio> {
                               labelText: "E-mail:",
                               hintText: "Digite seu e-mail",
                             )
-                        )
+                        ),
+                        TextField(
+                            controller: controllerAddLogin,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              labelText: "Login:",
+                              hintText: "Digite seu Login",
+                            )
+                        ),
+                        TextField(
+                            controller: controllerAddSenha,
+                            keyboardType: TextInputType.visiblePassword,
+                            decoration: InputDecoration(
+                              labelText: "Senha:",
+                              hintText: "Digite sua Senha",
+                            ), obscureText: true,
+                        ),
                     ],
                 ),
                   ),
@@ -248,12 +374,17 @@ class _InicioState extends State<Inicio> {
                               nome: controllerAddUsername.text,
                               email: controllerAddEmail.text,
                               avatar: controllerAddAvatar.text,
+                              login: controllerAddLogin.text,
+                              senha: controllerAddSenha.text,
                             )
                           );
                           controllerAddUsername.clear();
                           controllerAddUserCPF.clear();
                           controllerAddEmail.clear();
                           controllerAddAvatar.clear();
+                          controllerAddLogin.clear();
+                          controllerAddSenha.clear();
+
                           listUsers();
                           Navigator.pop(context);
                         },
