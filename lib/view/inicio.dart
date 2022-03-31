@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:projetolp4/data/usersDB.dart';
 import 'package:projetolp4/model/Users.dart';
+import 'telaDetalhe.dart';
+import 'package:provider/provider.dart';
+import 'package:cpf_cnpj_validator/cpf_validator.dart';
+import 'package:email_validator/email_validator.dart';
 
 class Inicio extends StatefulWidget {
   const Inicio({Key? key}) : super(key: key);
@@ -35,7 +39,7 @@ class _InicioState extends State<Inicio> {
               TextField(
                 controller: controllerBuscaUsuario,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Digite o Nome",
                   border: OutlineInputBorder()
                 ),
@@ -89,8 +93,6 @@ class _InicioState extends State<Inicio> {
     }
 
   }
-
-
   deleteUsers(int id){
     db.deleteUser(id);
   }
@@ -113,6 +115,9 @@ class _InicioState extends State<Inicio> {
   TextEditingController controllerEditAvatar = TextEditingController();
   TextEditingController controllerEditLogin = TextEditingController();
   TextEditingController controllerEditSenha = TextEditingController();
+
+  final GlobalKey<FormState> _formKeyAddusuario = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKeyEditusuario = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -149,6 +154,13 @@ class _InicioState extends State<Inicio> {
                 itemBuilder: (context, index){
                   return Card(
                     child: ListTile(
+                      onTap: (){
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context){
+                            return telaDetalhe(usuarios[index]);
+                        })
+                        );
+                      },
                       leading: CircleAvatar(
                         child: usuarios[index].avatar! == "" ? Icon(Icons.person, color: Colors.blue) :
                         Image.network(usuarios[index].avatar!)),
@@ -179,7 +191,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                   controller: controllerEditAvatar,
                                                   keyboardType: TextInputType.text,
-                                                  decoration: InputDecoration(
+                                                  decoration: const InputDecoration(
                                                     labelText: "Avatar:",
                                                     hintText: "Insira o link do Avatar",
                                                     )
@@ -187,7 +199,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                     controller: controllerEditUserCPF,
                                                     keyboardType: TextInputType.number,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "CPF:",
                                                       hintText: "Digite seu CPF",
                                                     )
@@ -195,7 +207,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                     controller: controllerEditUsername,
                                                     keyboardType: TextInputType.text,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "Nome:",
                                                       hintText: "Digite seu Nome",
                                                     )
@@ -203,7 +215,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                     controller: controllerEditEmail,
                                                     keyboardType: TextInputType.emailAddress,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "E-mail:",
                                                       hintText: "Digite seu e-mail",
                                                     )
@@ -211,7 +223,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                     controller: controllerEditLogin,
                                                     keyboardType: TextInputType.text,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "Login:",
                                                       hintText: "Digite seu Login",
                                                     )
@@ -219,7 +231,7 @@ class _InicioState extends State<Inicio> {
                                                 TextField(
                                                     controller: controllerEditSenha,
                                                     keyboardType: TextInputType.visiblePassword,
-                                                    decoration: InputDecoration(
+                                                    decoration: const InputDecoration(
                                                       labelText: "Senha:",
                                                       hintText: "Digite sua Senha",
                                                     ), obscureText: true,
@@ -311,65 +323,103 @@ class _InicioState extends State<Inicio> {
               builder: (context){
                 return AlertDialog(
                   title: const Text("Adicionar Usuário"),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children:  [
-                        TextField(
-                            controller: controllerAddAvatar,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              labelText: "Avatar:",
-                              hintText: "Digite seu Avatar",
+                  content: Form(
+                    key:_formKeyAddusuario,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children:  [
+                          TextFormField(
+                              controller: controllerAddAvatar,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: "Avatar:",
+                                hintText: "Digite seu Avatar",
+                              )
+                          ),
+                          TextFormField(
+                            controller: controllerAddUserCPF,
+                            validator: (campoCpf){
+                              if(campoCpf == null || campoCpf.isEmpty){
+                                return "Digite um CPF!";
+                              }
+                              if(CPFValidator.isValid(campoCpf) == false){
+                                return "CPF digitado incorretamente!";
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                                labelText: "CPF:",
+                                hintText: "Digite seu CPF",
                             )
-                        ),
-                        TextField(
-                          controller: controllerAddUserCPF,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                              labelText: "CPF:",
-                              hintText: "Digite seu CPF",
-                          )
-                        ),
-                        TextField(
-                          controller: controllerAddUsername,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              labelText: "Nome:",
-                              hintText: "Digite seu Nome",
-                            )
-                        ),
-                        TextField(
-                            controller: controllerAddEmail,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: "E-mail:",
-                              hintText: "Digite seu e-mail",
-                            )
-                        ),
-                        TextField(
-                            controller: controllerAddLogin,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              labelText: "Login:",
-                              hintText: "Digite seu Login",
-                            )
-                        ),
-                        TextField(
-                            controller: controllerAddSenha,
-                            keyboardType: TextInputType.visiblePassword,
-                            decoration: InputDecoration(
-                              labelText: "Senha:",
-                              hintText: "Digite sua Senha",
-                            ), obscureText: true,
-                        ),
-                    ],
+                          ),
+                          TextFormField(
+                            controller: controllerAddUsername,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: "Nome:",
+                                hintText: "Digite seu Nome",
+                              )
+                          ),
+                          TextFormField(
+                              controller: controllerAddEmail,
+                              validator: (campoEmail){
+                                if(campoEmail == null || campoEmail.isEmpty){
+                                  return "Digite o email";
+                                }
+                                if(EmailValidator.validate(campoEmail) == false){
+                                  return "Difite um email válido";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                labelText: "E-mail:",
+                                hintText: "Digite seu e-mail",
+                              )
+                          ),
+                          TextFormField(
+                              controller: controllerAddLogin,
+                              validator: (campoLogin){
+                                if(campoLogin == null || campoLogin.isEmpty){
+                                  return "Digite o Login";
+                                }
+                                if(campoLogin.length <= 5){
+                                  return "O Login deve ter pelo menos 5 caracteres";
+                                }
+                              },
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                labelText: "Login:",
+                                hintText: "Digite seu Login",
+                              )
+                          ),
+                          TextFormField(
+                              controller: controllerAddSenha,
+                              validator:(campoSenha){
+                                if(campoSenha == null || campoSenha.isEmpty){
+                                  return "Digite uma senha";
+                                }
+                                if(campoSenha.length <= 5){
+                                  return "A senha deve ter pelo menos 5 caracteres";
+                                }
+                              },
+                              keyboardType: TextInputType.visiblePassword,
+                              decoration: InputDecoration(
+                                labelText: "Senha:",
+                                hintText: "Digite sua Senha",
+                              ), obscureText: true,
+                          ),
+                      ],
                 ),
+                    ),
                   ),
                   actions: [
                     ElevatedButton(
                         onPressed: (){
-                          addUser(Users(
+                          if(_formKeyAddusuario.currentState!.validate()) {
+                            db.addUser(Users(
                               cpf: controllerAddUserCPF.text,
                               nome: controllerAddUsername.text,
                               email: controllerAddEmail.text,
@@ -377,16 +427,18 @@ class _InicioState extends State<Inicio> {
                               login: controllerAddLogin.text,
                               senha: controllerAddSenha.text,
                             )
-                          );
-                          controllerAddUsername.clear();
-                          controllerAddUserCPF.clear();
-                          controllerAddEmail.clear();
-                          controllerAddAvatar.clear();
-                          controllerAddLogin.clear();
-                          controllerAddSenha.clear();
+                            );
+                            controllerAddUsername.clear();
+                            controllerAddUserCPF.clear();
+                            controllerAddEmail.clear();
+                            controllerAddAvatar.clear();
+                            controllerAddLogin.clear();
+                            controllerAddSenha.clear();
 
-                          listUsers();
-                          Navigator.pop(context);
+                            listUsers();
+                            Navigator.pop(context);
+                          }
+
                         },
                         child: Text("Salvar")),
                     ElevatedButton(

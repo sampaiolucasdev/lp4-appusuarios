@@ -63,6 +63,7 @@ class UsersDB {
       db.delete(table, where: "id = ?", whereArgs: [id]);
     }
 
+
     editUser(Users u) async {
       Database db = await this.db;
       db.update(table,

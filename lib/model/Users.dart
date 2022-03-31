@@ -10,4 +10,5 @@ class Users {
 
   Users({this.id, this.cpf, this.email, this.nome, this.avatar, this.login, this.senha}); //construtor
 
+
 }
