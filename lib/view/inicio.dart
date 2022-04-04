@@ -184,59 +184,70 @@ class _InicioState extends State<Inicio> {
                                     builder: (context){
                                       return AlertDialog(
                                           title: const Text("Editar Usuário"),
-                                          content: SingleChildScrollView(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children:  [
-                                                TextField(
-                                                  controller: controllerEditAvatar,
-                                                  keyboardType: TextInputType.text,
-                                                  decoration: const InputDecoration(
-                                                    labelText: "Avatar:",
-                                                    hintText: "Insira o link do Avatar",
-                                                    )
-                                                ),
-                                                TextField(
-                                                    controller: controllerEditUserCPF,
-                                                    keyboardType: TextInputType.number,
-                                                    decoration: const InputDecoration(
-                                                      labelText: "CPF:",
-                                                      hintText: "Digite seu CPF",
-                                                    )
-                                                ),
-                                                TextField(
-                                                    controller: controllerEditUsername,
+                                          content: Form(
+                                            key: _formKeyEditusuario,
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children:  [
+                                                  TextFormField(
+                                                    controller: controllerEditAvatar,
                                                     keyboardType: TextInputType.text,
                                                     decoration: const InputDecoration(
-                                                      labelText: "Nome:",
-                                                      hintText: "Digite seu Nome",
-                                                    )
-                                                ),
-                                                TextField(
-                                                    controller: controllerEditEmail,
-                                                    keyboardType: TextInputType.emailAddress,
-                                                    decoration: const InputDecoration(
-                                                      labelText: "E-mail:",
-                                                      hintText: "Digite seu e-mail",
-                                                    )
-                                                ),
-                                                TextField(
-                                                    controller: controllerEditLogin,
-                                                    keyboardType: TextInputType.text,
-                                                    decoration: const InputDecoration(
-                                                      labelText: "Login:",
-                                                      hintText: "Digite seu Login",
-                                                    )
-                                                ),
-                                                TextField(
-                                                    controller: controllerEditSenha,
-                                                    keyboardType: TextInputType.visiblePassword,
-                                                    decoration: const InputDecoration(
-                                                      labelText: "Senha:",
-                                                      hintText: "Digite sua Senha",
-                                                    ), obscureText: true,
-                                                ),
-                                              ],
+                                                      labelText: "Avatar:",
+                                                      hintText: "Insira o link do Avatar",
+                                                      )
+                                                  ),
+                                                  TextFormField(
+                                                      controller: controllerEditUserCPF,
+                                                      validator: (campoCpf){
+                                                        if(campoCpf == null || campoCpf.isEmpty){
+                                                          return "Digite um CPF!";
+                                                        }
+                                                        if(CPFValidator.isValid(campoCpf) == false){
+                                                          return "Cpf digitado inválido!";
+                                                        } return null;
+                                                      },
+                                                      keyboardType: TextInputType.number,
+                                                      decoration: const InputDecoration(
+                                                        labelText: "CPF:",
+                                                        hintText: "Digite seu CPF",
+                                                      )
+                                                  ),
+                                                  TextFormField(
+                                                      controller: controllerEditUsername,
+                                                      keyboardType: TextInputType.text,
+                                                      decoration: const InputDecoration(
+                                                        labelText: "Nome:",
+                                                        hintText: "Digite seu Nome",
+                                                      )
+                                                  ),
+                                                  TextFormField(
+                                                      controller: controllerEditEmail,
+                                                      keyboardType: TextInputType.emailAddress,
+                                                      decoration: const InputDecoration(
+                                                        labelText: "E-mail:",
+                                                        hintText: "Digite seu e-mail",
+                                                      )
+                                                  ),
+                                                  TextFormField(
+                                                      controller: controllerEditLogin,
+                                                      keyboardType: TextInputType.text,
+                                                      decoration: const InputDecoration(
+                                                        labelText: "Login:",
+                                                        hintText: "Digite seu Login",
+                                                      )
+                                                  ),
+                                                  TextFormField(
+                                                      controller: controllerEditSenha,
+                                                      keyboardType: TextInputType.visiblePassword,
+                                                      decoration: const InputDecoration(
+                                                        labelText: "Senha:",
+                                                        hintText: "Digite sua Senha",
+                                                      ), obscureText: true,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                           actions: [
