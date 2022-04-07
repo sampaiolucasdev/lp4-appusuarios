@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetolp4/view/inicio.dart';
 import 'package:projetolp4/view/telausuario.dart';
-import 'package:projetolp4/view/telaDetalhe.dart';
+import 'package:projetolp4/view/telaDetalheUsuario.dart';
 
 void main(){
   runApp(MaterialApp(
@@ -11,7 +11,7 @@ void main(){
     routes: {
       "/telausuario": (context) => const telausuario(),
       "/telainicio": (context) => const Inicio(),
-      "/teladetalhe": (context) => const telaDetalhe(),
+      "/teladetalheusuario": (context) => const telaDetalheUsuario(),
     }
   ));
 }

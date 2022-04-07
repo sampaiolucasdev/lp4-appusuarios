@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetolp4/data/usersDB.dart';
 import 'package:projetolp4/model/Users.dart';
-import 'telaDetalhe.dart';
+import 'telaDetalheUsuario.dart';
 import 'package:provider/provider.dart';
 import 'package:cpf_cnpj_validator/cpf_validator.dart';
 import 'package:email_validator/email_validator.dart';
@@ -165,17 +165,17 @@ class _telausuarioState extends State<telausuario> {
                     return Card(
                       child: ListTile(
                         onTap: (){
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context){
-                                return telaDetalhe(usuario: usuarios[index]);
-                              })
-                          );
+                          Navigator.pushNamed(context, "/teladetalheusuario",
+                          arguments: Users(
+                            id: usuarios[index].id,
+                            cpf: usuarios[index].cpf,
+                            nome: usuarios[index].nome,
+                            email: usuarios[index].email,
+                            login: usuarios[index].login,
+                            senha: usuarios[index].senha,
+                            avatar: usuarios[index].avatar,
+                          ));
                         },
-                        leading: CircleAvatar(
-                            child: usuarios[index].avatar! == "" ? Icon(Icons.person, color: Colors.blue) :
-                            Image.network(usuarios[index].avatar!)),
-
-                        title: Text(usuarios[index].nome!),
                         subtitle: Text(usuarios[index].email!),
                         trailing: Container(
                             width: 100,
@@ -295,8 +295,26 @@ class _telausuarioState extends State<telausuario> {
                                                         controllerEditSenha.clear();
 
                                                         Navigator.pop(context);
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                            SnackBar(
+                                                              action: SnackBarAction(
+                                                                label: "Desfazer",
+                                                                onPressed: (){
+                                                                  listUsers();
+                                                                },
+                                                              ),
+                                                              backgroundColor: Colors.green,
+                                                              content: Text("Usuário ${usuarios[index].nome} alterado com sucesso!",
+                                                                style: const TextStyle(
+                                                                    color: Colors.white,
+                                                                    fontWeight: FontWeight.bold
+                                                                ),
+                                                              ),
+                                                            )
+                                                        );
                                                       }
                                                     },
+
                                                     child: Text("Salvar")),
                                                 ElevatedButton(
                                                     onPressed: (){
@@ -317,6 +335,7 @@ class _telausuarioState extends State<telausuario> {
                                     showDialog(
                                         context:context,
                                         builder: (context){
+                                          Users temp = usuarios[index]; //Armazena usuário em variável temporaria
                                           return AlertDialog(
                                               title: Text("Excluir usuário"),
                                               content: Text("Deseja excluir o usuário ${usuarios[index].nome} ?"),
@@ -332,6 +351,24 @@ class _telausuarioState extends State<telausuario> {
                                                       deleteUsers(usuarios[index].id!);
                                                       listUsers();
                                                       Navigator.pop(context);
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(
+                                                            action: SnackBarAction(
+                                                              label: "Desfazer",
+                                                              onPressed: (){
+                                                                db.addUser(temp);
+                                                                listUsers();
+                                                              },
+                                                            ),
+                                                            backgroundColor: Colors.red,
+                                                            content: Text("Usuário ${usuarios[index].nome} excluído com sucesso!",
+                                                              style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.bold
+                                                              ),
+                                                            ),
+                                                          )
+                                                      );
                                                     },
                                                     child: Text("Sim"))
                                               ]
@@ -345,6 +382,27 @@ class _telausuarioState extends State<telausuario> {
                               ],
                             )
                         ),
+                          leading: usuarios[index].avatar! == "" ? Icon(Icons.person, color: Colors.blue) :
+                          CircleAvatar(
+                              backgroundImage:(
+                                  NetworkImage(usuarios[index].avatar!
+                                  )),
+                              onBackgroundImageError: (exception, stacktrace){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      action: SnackBarAction(
+                                        label: "Fechar",
+                                        onPressed: (){},
+                                      ), content: Text("Aviso: avatar do usuário ${usuarios[index].nome} não encontrado!",
+                                        style: const TextStyle(
+                                            color: Colors.black
+                                        )),
+                                    )
+                                );
+                              }
+                          ),
+
+                          title: Text(usuarios[index].nome!),
                       ),
                     );
                   },
@@ -475,6 +533,23 @@ class _telausuarioState extends State<telausuario> {
                               listUsers();
                               Navigator.pop(context);
                             }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  action: SnackBarAction(
+                                    label: "Desfazer",
+                                    onPressed: (){
+                                      listUsers();
+                                    },
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  content: Text("Usuário salvo com sucesso!",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                )
+                            );
 
                           },
                           child: Text("Salvar")),
@@ -493,3 +568,5 @@ class _telausuarioState extends State<telausuario> {
   }
 
 }
+
+
