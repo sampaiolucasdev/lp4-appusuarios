@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:projetolp4/model/Users.dart';
+import 'package:projetolp4/provider/provider_usuario.dart';
+import 'package:provider/provider.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);
@@ -8,8 +11,12 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
+  late Users usuarioAutenticado;
+
   @override
   Widget build(BuildContext context) {
+    usuarioAutenticado = Provider.of<UsuarioModel>(context, listen:true).user;
+
     return Drawer(
       child: ListView(
         children: [
@@ -19,12 +26,21 @@ class _MenuState extends State<Menu> {
             ),
             child:
             ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text("Lucas", style: const TextStyle(fontSize: 18)),
-              subtitle: Text("Eduardo"),
+              leading: usuarioAutenticado.avatar! == ""
+                  ?
+              const Icon(
+                Icons.account_circle,
+                color: Colors.blue,
+              )
+                  : CircleAvatar(
+                backgroundImage: NetworkImage(usuarioAutenticado.avatar!),
+                radius: 30,
+              ),
+              title: Text(usuarioAutenticado.nome!, style: const TextStyle(fontSize: 18)),
+              subtitle: Text(usuarioAutenticado.email!),
               trailing: Container(
                 padding: const EdgeInsets.only(left: 20),
-                width: 40,
+                width: 50,
                 child: IconButton(
                   icon: const Icon(
                     Icons.close,
@@ -38,34 +54,97 @@ class _MenuState extends State<Menu> {
             ),
 
           ),
-          ListTile(
-            onTap: (){
-              Navigator.pushNamed(context, "/telainicio");
-            },
-            leading: const Icon(Icons.home),
-            title: const Text("Início"),
-          ),
-          ListTile(
-            onTap: (){},
-            leading: const Icon(Icons.apartment),
-            title: const Text("Fornecedores"),
-          ),
-          ListTile(
-            onTap: (){
-              Navigator.pushNamed(context, "/telausuario");
-            },
-            leading: const Icon(Icons.person),
-            title: const Text("Usuários"),
-          ),
-          const Divider(),
-            ListTile(
-              onTap: (){
-                Navigator.pushReplacementNamed(context, "/telainicio");
-              },
-              leading: const Icon(Icons.logout),
-              title: const Text("Sair"),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "/telainicio");
+                  },
+                  leading: const Icon(Icons.home),
+                  title: const Text("Início"),
+                ),
+                ListTile(
+                  onTap: (){},
+                  leading: const Icon(Icons.home),
+                  title: const Text("Fornecedores"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "/telausuario");
+                  },
+                  leading: const Icon(Icons.person),
+                  title: const Text("Usuários"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.add),
+                  title: const Text("Produtos"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.apartment),
+                  title: const Text("Clientes"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.directions),
+                  title: const Text("API"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.settings),
+                  title: const Text("Configurações"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.settings),
+                  title: const Text("Configurações"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.settings),
+                  title: const Text("Configurações"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.settings),
+                  title: const Text("Configurações"),
+                ),
+                ListTile(
+                  onTap: (){
+                    Navigator.pushNamed(context, "");
+                  },
+                  leading: const Icon(Icons.settings),
+                  title: const Text("Configurações"),
+                ),
+              ],
             ),
+          ),
+          ListTile(
+            onTap: (){
+              Navigator.pushReplacementNamed(context, "/telainicio");
+            },
+            leading: const Icon(Icons.logout),
+            title: const Text("Sair"),
+          ),
+
         ],
+
       )
     );
   }

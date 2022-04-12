@@ -58,13 +58,11 @@ class UsersDB {
       );
     });
   }
-    deleteUser(int id) async {
+  deleteUser(int id) async {
       Database db = await this.db;
       db.delete(table, where: "id = ?", whereArgs: [id]);
     }
-
-
-    editUser(Users u) async {
+  editUser(Users u) async {
       Database db = await this.db;
       db.update(table,
       {
@@ -78,5 +76,46 @@ class UsersDB {
         where: "id = ?",
         whereArgs: [u.id]
       );
+    }
+  consultarLoginUsuario(String login, String senha) async {
+      var bd = await db;
+
+      List resultado = await bd.query(
+          table,
+          where: "login = ? and senha = ?",
+          whereArgs: [login, senha]);
+
+      if(resultado.isNotEmpty){
+        return Users(
+          id: resultado[0]["id"],
+          cpf: resultado[0]["cpf"],
+          nome: resultado[0]["nome"],
+          email: resultado[0]["email"],
+          login: resultado[0]["login"],
+          senha: resultado[0]["senha"],
+          avatar: resultado[0]["avatar"],
+        );
+      } else{
+        return null;
+      }
+    }
+  criarUsuarioAdmin() async {
+      var bd = await db;
+
+      List resultado =
+          await bd.query(table, where: "Login = ?", whereArgs: ["admin"]);
+
+      if(resultado.isEmpty){
+        await bd.insert(table,{
+          "cpf": "12345678910",
+          "nome": "Admin",
+          "email": "admin@gmail.com",
+          "login": "admin",
+          "senha": "123456",
+          "avatar": "",
+        });
+      }
+
+
     }
 }
